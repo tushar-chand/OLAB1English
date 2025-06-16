@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallelogram Theorem Simulation</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for specific elements not fully covered by Tailwind, or for overrides */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Modern background gradient inspired by reference */
+            background: linear-gradient(135deg, #1A202C, #2D3748, #4A5568); /* Darker, professional gradient */
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: crosshair;
+        }
+
+        /* Specific styles for the grid background on canvas-container */
+        .grid-bg {
+            background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 15px, #ffffff 15px, #ffffff 30px); /* Lighter grid for modern look */
+        }
+
+        /* Styling for the interactive button on hover/active, overriding default Tailwind */
+        button:hover:not(:disabled) {
+            transform: translateY(-3px); /* Slightly more lift on hover */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
+        }
+        button:active:not(:disabled) {
+            transform: translateY(0); /* Press down effect */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Softer active shadow */
+        }
+
+        /* Gradient text for titles */
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-blue-cyan {
+            background-image: linear-gradient(to right, #2563eb, #06b6d4); /* Tailwind blue-600 to cyan-500 */
+        }
+        .gradient-blue-purple {
+            background-image: linear-gradient(to right, #4c51bf, #7f00ff); /* Indigo to a purplier shade */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-900 to-indigo-900">
+    <!-- START SCREEN -->
+    <div id="startScreen" class="w-full max-w-6xl bg-white rounded-2xl shadow-2xl py-16 px-8 text-center transition-all duration-500 ease-in-out transform scale-100 hover:scale-105">
+        <!-- NCERT Logo -->
+        <img src="data/ncert_logo.png" alt="NCERT Logo" class="h-48 mb-4 mx-auto" onerror="this.onerror=null;this.src='https://placehold.co/96x96/E0E7FF/4338CA?text=NCERT%20Logo';">
+        
+        <h1 class="text-5xl font-extrabold text-gradient gradient-blue-purple mb-6 leading-tight">Parallelogram Area Theorem</h1>
+        <p class="text-xl text-gray-700 mb-10">A visual simulation to explore and verify the area theorem.</p>
+        <button id="startSimulationBtn" 
+                class="px-10 py-4 bg-indigo-600 text-white text-xl font-semibold rounded-xl shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform hover:shadow-xl">
+            Start Simulation
+        </button>
+    </div>
+
+    <!-- INTRO SCREEN -->
+    <div id="introScreen" class="hidden w-full max-w-7xl bg-white rounded-2xl shadow-2xl py-8 px-6 text-center transition-all duration-500 ease-in-out transform scale-100 hover:scale-105">
+        <h1 class="text-3xl font-extrabold text-gradient gradient-blue-purple mb-6 leading-tight">Welcome to the Parallelogram Area Theorem Simulation!</h1>
+        
+        <div class="flex flex-col md:flex-row justify-around items-start text-left mb-6 space-y-6 md:space-y-0 md:space-x-6">
+            <div class="flex-1 p-3 bg-blue-50 rounded-lg shadow-inner border-l-4 border-blue-200">
+                <h2 class="text-xl font-bold text-blue-800 mb-3">🎯 Aim of the Experiment</h2>
+                <ul class="list-disc list-inside text-gray-800 text-base space-y-1">
+                    <li>To visually verify that parallelograms on the same base and between the same parallels are equal in area by:</li>
+                    <li>Constructing two parallelograms using a fixed base.</li>
+                    <li>Rearranging each into a rectangle.</li>
+                    <li>Estimating their area using unit square approximation on a graph.</li>
+                    <li>This simulation helps build a visual understanding of the theorem through interactive geometry and area approximation.</li>
+                </ul>
+            </div>
+            
+            <div class="flex-1 p-3 bg-green-50 rounded-lg shadow-inner border-l-4 border-green-200">
+                <h2 class="text-xl font-bold text-green-800 mb-3">🎮 How to Play the Interactive Simulation</h2>
+                <ul class="list-disc list-inside text-gray-800 text-base space-y-1">
+                    <li>Construct Parallelograms
+                        <ul class="list-disc list-inside ml-4 text-gray-700">
+                            <li>A baseline AB will appear.</li>
+                            <li>Draw a line upward from point A to define one side of the first parallelogram (ABCD).</li>
+                            <li>Repeat for a second parallelogram (ABEF) on the same base.</li>
+                        </ul>
+                    </li>
+                    <li>Rearrange into Rectangles
+                        <ul class="list-disc list-inside ml-4 text-gray-700">
+                            <li>Drop a perpendicular from the top vertex.</li>
+                            <li>A triangle block will be formed.</li>
+                            <li>Drag and snap this block to the opposite side to form a rectangle.</li>
+                            <li>Observe that both rectangles have the same area.</li>
+                        </ul>
+                    </li>
+                    <li>Estimate Area Using Grid Blocks
+                        <ul class="list-disc list-inside ml-4 text-gray-700">
+                            <li>Tap on the 1 cm² blocks inside each parallelogram.</li>
+                            <li>Blocks will be colour-coded and counted as follows:</li>
+                            <ul class="list-disc list-inside ml-8 text-gray-600">
+                                <li>Full/mostly covered → +1</li>
+                                <li>Half covered → +0.5</li>
+                                <li>Less than half → ignored</li>
+                            </ul>
+                            <li>Compare estimated areas.</li>
+                        </ul>
+                    </li>
+                    <li>Observe and Conclude
+                        <ul class="list-disc list-inside ml-4 text-gray-700">
+                            <li>Both parallelograms are shown equal in area.</li>
+                            <li>The final screen confirms the theorem.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="text-xs text-gray-500 italic mb-6">
+            Disclaimer: This is a conceptual simulation for educational purposes. Measurements are visually approximated, not mathematically precise. Area estimations are based on grid coverage and interactive rearrangement, suitable for learning, not technical proofs. Real-world geometry may involve more precise instruments and measurement tools.
+        </p>
+
+        <button id="continueIntroBtn" 
+                class="px-8 py-3 bg-indigo-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform hover:shadow-xl">
+            Continue
+        </button>
+    </div>
+
+    <!-- NEW SCREEN: MATERIALS & PRECAUTIONS -->
+    <div id="materialsPrecautionsScreen" class="hidden w-full max-w-7xl bg-white rounded-2xl shadow-2xl py-8 px-6 text-center transition-all duration-500 ease-in-out transform scale-100 hover:scale-105">
+        <h1 class="text-3xl font-extrabold text-gradient gradient-blue-purple mb-8 leading-tight">Experiment Setup</h1>
+        
+        <div class="flex flex-col md:flex-row justify-around items-start text-left mb-10 space-y-8 md:space-y-0 md:space-x-8">
+            <div class="flex-1 p-4 bg-blue-50 rounded-lg shadow-inner border-l-4 border-blue-200">
+                <h2 class="text-2xl font-bold text-blue-800 mb-4">🔬 Materials Used <span class="text-base font-normal italic">(in a real-world equivalent setup)</span></h2>
+                <ul class="list-disc list-inside text-gray-800 text-lg space-y-2">
+                    <li>If performed manually in a classroom or lab:</li>
+                    <ul class="list-disc list-inside ml-4 text-gray-700">
+                        <li>Graph paper (1 cm² grid)</li>
+                        <li>Ruler or straightedge</li>
+                        <li>Pencil/pen</li>
+                        <li>Set squares or right-angle tools (for drawing perpendiculars)</li>
+                        <li>Scissors (for rearranging paper parallelograms)</li>
+                        <li>Colored paper for triangle pieces</li>
+                    </ul>
+                </ul>
+            </div>
+            
+            <div class="flex-1 p-4 bg-green-50 rounded-lg shadow-inner border-l-4 border-green-200">
+                <h2 class="text-2xl font-bold text-green-800 mb-4">⚠️ Precautions</h2>
+                <ul class="list-disc list-inside text-gray-800 text-lg space-y-2">
+                    <li>Ensure perpendiculars are drawn accurately from the vertex to the base.</li>
+                    <li>Align base and height carefully while rearranging into rectangles.</li>
+                    <li>When using graph paper, avoid parallax error while counting squares.</li>
+                    <li>Clearly distinguish between fully, partially, and barely covered blocks.</li>
+                    <li>Engage with each step actively — the conceptual understanding comes from interaction.</li>
+                </ul>
+            </div>
+        </div>
+
+        <button id="proceedToSimulationBtn" 
+                class="px-10 py-4 bg-indigo-600 text-white text-xl font-semibold rounded-xl shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform hover:shadow-xl">
+            Proceed to Simulation
+        </button>
+    </div>
+
+    <!-- MAIN SIMULATION CONTENT (Initially hidden) -->
+    <div id="mainSimulationContent" class="hidden w-full max-w-full bg-white rounded-2xl shadow-2xl p-6 md:p-8 overflow-hidden">
+        <div class="bg-gradient-to-br from-blue-600 to-cyan-500 text-white p-6 rounded-t-2xl text-center shadow-md">
+            <h1 class="text-3xl font-bold">Parallelogram Area Theorem</h1>
+            <p class="text-lg opacity-90 mt-2">A visual simulation to verify the theorem.</p>
+        </div>
+
+        <div class="p-6">
+            <!-- PART 1: CONSTRUCTION -->
+            <div id="part1" class="part mb-8 p-6 border border-gray-200 rounded-2xl bg-gray-50 shadow-lg flex flex-col md:flex-row md:space-x-6 min-h-[600px]">
+                <!-- Left Column: Canvas -->
+                <div class="canvas-area flex-1 flex justify-center items-center md:w-2/3">
+                    <div class="canvas-container my-6 grid-bg rounded-xl overflow-hidden shadow-inner w-full h-auto">
+                        <canvas id="constructionCanvas" width="900" height="525" class="rounded-lg w-full h-auto block"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Right Column: Info/Controls Panel -->
+                <div class="info-panel md:w-1/3 p-4 bg-white rounded-xl shadow-md flex flex-col justify-between">
+                    <div class="text-2xl font-bold text-gradient gradient-blue-cyan mb-4">🔷 PART 1: Construct Two Parallelograms</div>
+                    <!-- Voice-over -->
+                    <div class="voice-over bg-blue-50 text-blue-800 p-4 rounded-lg border-l-4 border-blue-400 italic mb-4" id="vo1">
+                        In this activity, we’ll explore how two different parallelograms constructed on the same base and between the same parallels can have equal areas. Let’s begin by constructing two parallelograms on the same base and between the same parallels.
+                    </div>
+                    <!-- Status -->
+                    <div class="status text-center font-semibold bg-red-50 text-red-700 p-3 rounded-lg border-l-4 border-red-400 min-h-[30px] mb-4" id="constructionStatus">
+                        This horizontal segment is your fixed base — AB. Draw a line upward from point A to define the height. The top point will snap to the grid.
+                    </div>
+                    <!-- Controls -->
+                    <div class="controls flex justify-center gap-4 flex-wrap mt-auto">
+                        <button id="resetConstruction" class="px-8 py-3 bg-gray-400 text-white font-semibold rounded-xl shadow-md hover:bg-gray-500 transition-colors transform hover:shadow-lg">
+                            Reset Part 1
+                        </button>
+                        <button id="goToPart2" class="px-8 py-3 bg-green-500 text-white font-semibold rounded-xl shadow-md hover:bg-green-600 transition-colors transform hover:shadow-lg hidden">
+                            Continue to Part 2 ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART 2: REARRANGEMENT -->
+            <div id="part2" class="part mb-8 p-6 border border-gray-200 rounded-2xl bg-gray-50 shadow-lg flex flex-col md:flex-row md:space-x-6 min-h-[600px] hidden">
+                <!-- Left Column: Canvas -->
+                <div class="canvas-area flex-1 flex justify-center items-center md:w-2/3">
+                   <div class="canvas-container my-6 grid-bg rounded-xl overflow-hidden shadow-inner w-full h-auto" style="min-height: 525px;">
+                    <canvas id="rearrangementCanvas" width="1140" height="525" class="rounded-lg block"></canvas>
+                </div>
+                </div>
+
+                <!-- Right Column: Info/Controls Panel -->
+                <div class="info-panel md:w-1/3 p-4 bg-white rounded-xl shadow-md flex flex-col justify-between">
+                    <div class="text-2xl font-bold text-gradient gradient-blue-cyan mb-4">🔷 PART 2: Visual Rearrangement to a Rectangle</div>
+                    <div class="voice-over bg-blue-50 text-blue-800 p-4 rounded-lg border-l-4 border-blue-400 italic mb-4" id="vo2">
+                        Now, we’ll transform each parallelogram into a rectangle and calculate its area.
+                    </div>
+                    <!-- Measurement Input Section -->
+                    <div class="input-section bg-gray-100 p-4 rounded-lg shadow-inner mb-4" id="measurementInputSection">
+                        <div class="text-lg font-semibold text-gray-800 mb-3">Enter the dimensions:</div>
+                        <div class="flex flex-col space-y-2">
+                            <label for="inputBase" class="text-sm text-gray-700">Base (AB):</label>
+                            <input type="number" id="inputBase" class="p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            <label for="inputHeight" class="text-sm text-gray-700" id="heightInputLabel">Height (Perpendicular):</label>
+                            <input type="number" id="inputHeight" class="p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <button id="submitMeasurementBtn" class="mt-4 px-6 py-2 bg-blue-600 text-white font-semibold rounded-xl shadow-md hover:bg-blue-700 transition-colors transform hover:shadow-lg">
+                            Submit Values
+                        </button>
+                        <div id="measurementFeedback" class="mt-3 text-center font-medium min-h-[20px]"></div>
+                    </div>
+                    <!-- End Measurement Input Section -->
+
+                    <div class="status text-center font-semibold bg-red-50 text-red-700 p-3 rounded-lg border-l-4 border-red-400 min-h-[30px] mb-4" id="rearrangementStatus"></div>
+                    <div class="area-display hidden bg-green-100 text-green-800 p-4 rounded-xl font-bold text-lg text-center mt-4 shadow-sm" id="areaResults"></div>
+                    <div class="controls flex justify-center gap-4 flex-wrap mt-auto">
+                        <!-- The original "Continue" button for advancing from input phase -->
+                        <button id="nextRearrangementStepContinueBtn" class="px-8 py-3 bg-green-500 text-white font-semibold rounded-xl shadow-md hover:bg-green-600 transition-colors transform hover:shadow-lg" disabled>
+                            Continue
+                        </button>
+                        <!-- Existing "Drop Perpendicular" button -->
+                        <button id="nextRearrangementStepDropPerpendicularBtn" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:bg-blue-600 transition-colors transform hover:shadow-lg hidden" disabled>
+                            Drop Perpendicular
+                        </button>
+                        <!-- NEW "Continue" button for testing beside "Drop Perpendicular" -->
+                        <button id="testContinueButton" class="px-8 py-3 bg-green-500 text-white font-semibold rounded-xl shadow-md hover:bg-green-600 transition-colors transform hover:shadow-lg hidden">
+                            Continue
+                        </button>
+                        <button id="goToPart3" class="px-8 py-3 bg-green-500 text-white font-semibold rounded-xl shadow-md hover:bg-green-600 transition-colors transform hover:shadow-lg hidden">
+                            Continue to Part 3 ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART 3: Block-Based Area Approximation -->
+            <div id="part3" class="part mb-8 p-6 border border-gray-200 rounded-2xl bg-gray-50 shadow-lg flex flex-col md:flex-row md:space-x-6 min-h-[600px] hidden">
+                <!-- Left Column: Canvas -->
+                <div class="canvas-area flex-1 flex justify-center items-center md:w-2/3">
+                    <div class="canvas-container my-6 grid-bg rounded-xl overflow-hidden shadow-inner w-full h-auto">
+                        <canvas id="gridCanvas" width="1140" height="600" class="rounded-lg w-full h-auto block"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Column: Info/Controls Panel -->
+                <div class="info-panel md:w-1/3 p-4 bg-white rounded-xl shadow-md flex flex-col justify-between">
+                    <div class="part-title text-2xl font-bold text-gradient gradient-blue-cyan mb-4">🔷 PART 3: Block-Based Area Approximation</div>
+                    <div class="voice-over bg-blue-50 text-blue-800 p-4 rounded-lg border-l-4 border-blue-400 italic mb-4" id="vo3">
+                        Finally, let’s estimate and compare the area of both parallelograms by counting how many unit blocks they cover on the grid. Each square represents 1 square centimeter. Let’s start with parallelogram ABCD.
+                    </div>
+                    <div class="status text-center font-semibold bg-red-50 text-red-700 p-3 rounded-lg border-l-4 border-red-400 min-h-[30px] mb-4" id="gridStatus">
+                        Tap on the blocks fully or mostly covered by ABCD.
+                    </div>
+                    <div class="flex justify-center gap-16 md:gap-24 my-4">
+                        <div class="counter text-blue-700 text-3xl font-bold">ABCD: <span id="counter1">0</span> cm²</div>
+                        <div class="counter text-blue-700 text-3xl font-bold">ABEF: <span id="counter2">0</span> cm²</div>
+                    </div>
+                    <div class="legend flex justify-center gap-4 md:gap-8 flex-wrap text-sm text-gray-700 mt-4">
+                        <div class="legend-item flex items-center gap-2">
+                            <div class="legend-color w-5 h-5 rounded-sm border border-gray-400" style="background: #4CAF50;"></div> Full (+1)
+                        </div>
+                        <div class="legend-item flex items-center gap-2">
+                            <div class="legend-color w-5 h-5 rounded-sm border border-gray-400" style="background: #FFEB3B;"></div> > Half (+1)
+                        </div>
+                        <div class="legend-item flex items-center gap-2">
+                            <div class="legend-color w-5 h-5 rounded-sm border-gray-400" style="background: #FF9800;"></div> Half (+0.5)
+                        </div>
+                        <div class="legend-item flex items-center gap-2">
+                            <div class="legend-color w-5 h-5 rounded-sm border-gray-400" style="background: #BDBDBD;"></div> &lt; Half (+0)
+                        </div>
+                    </div>
+                    <div class="area-display hidden bg-green-100 text-green-800 p-4 rounded-xl font-bold text-lg text-center mt-4 shadow-sm" id="finalComparison"></div>
+                    <div class="controls flex justify-center gap-4 flex-wrap mt-auto">
+                        <button id="countABCD_Btn" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:bg-blue-600 transition-colors transform hover:shadow-lg">
+                            Count for ABCD
+                        </button>
+                        <button id="countABEF_Btn" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:bg-blue-600 transition-colors transform hover:shadow-lg" disabled>
+                            Count for ABEF
+                        </button>
+                        <button id="resetGrid" class="px-8 py-3 bg-gray-400 text-white font-semibold rounded-xl shadow-md hover:bg-gray-500 transition-colors transform hover:shadow-lg">
+                            Reset Grid
+                        </button>
+                        <button id="goToPart4" class="px-8 py-3 bg-green-500 text-white font-semibold rounded-xl shadow-md hover:bg-green-600 transition-colors transform hover:shadow-lg hidden">
+                            Go to Conclusion ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART 4: CONCLUSION SCREEN -->
+            <div id="part4" class="part mb-8 p-6 border border-gray-200 rounded-2xl bg-gray-50 shadow-lg flex flex-col md:flex-row md:space-x-6 min-h-[600px] hidden">
+                <!-- Left Column: Canvas -->
+                <div class="canvas-area flex-1 flex justify-center items-center md:w-2/3">
+                    <div class="canvas-container my-6 grid-bg rounded-xl overflow-hidden shadow-inner w-full h-auto">
+                        <canvas id="comparisonCanvas" width="1000" height="400" class="rounded-lg w-full h-auto block"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Column: Info/Controls Panel -->
+                <div class="info-panel md:w-1/3 p-4 bg-white rounded-xl shadow-md flex flex-col justify-between">
+                    <div class="part-title text-2xl font-bold text-gradient gradient-blue-cyan mb-4">✅ PART 4: Conclusion & Theorem Summary</div>
+                    <div class="voice-over bg-blue-50 text-blue-800 p-4 rounded-lg border-l-4 border-blue-400 italic mb-4" id="vo4">
+                        Congratulations! You've successfully completed the simulation. Here's a summary of what we've learned about the Parallelogram Area Theorem.
+                    </div>
+                    <div class="text-lg text-gray-700 mb-6">
+                        <p class="font-semibold text-blue-700 mb-2">The Parallelogram Area Theorem states:</p>
+                        <p class="mb-4">
+                            "Parallelograms on the same base and between the same parallels are equal in area."
+                        </p>
+                        <p class="font-semibold text-blue-700 mb-2">Our Findings from the Simulation:</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>You constructed two distinct parallelograms, ABCD and ABEF, on the same base and between the same parallels.</li>
+                            <li>Through visual rearrangement, you transformed both into rectangles, showing their areas are equivalent to a rectangle with the same base and height.</li>
+                            <li>Your block-based area estimation showed similar area values for both, reinforcing the theorem.</li>
+                        </ul>
+                    </div>
+                    <div class="area-display bg-green-100 text-green-800 p-4 rounded-xl font-bold text-lg text-center mt-4 shadow-sm" id="finalExactAreas">
+                        <!-- Exact areas will be displayed here by JavaScript -->
+                    </div>
+                    <div class="controls flex justify-center gap-4 flex-wrap mt-auto">
+                        <button id="restartSimulationBtn" class="px-8 py-3 bg-indigo-600 text-white text-lg font-semibold rounded-xl shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform hover:shadow-xl">
+                            Restart Simulation
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Hidden Audio Elements for Voiceovers -->
+    <audio id="voS1V1" src="data/S1V1.mp3" preload="auto"></audio>
+    <audio id="voS1V2" src="data/S1V2.mp3" preload="auto"></audio>
+    <audio id="voS2V1" src="data/S2V1.mp3" preload="auto"></audio>
+    <audio id="voS2V2" src="data/S2V2.mp3" preload="auto"></audio>
+    <audio id="voS2V3" src="data/S2V3.mp3" preload="auto"></audio>
+    <audio id="voS3V1" src="data/S3V1.mp3" preload="auto"></audio>
+    <audio id="voS3V2" src="data/S3V2.mp3" preload="auto"></audio>
+    <audio id="voS4V1" src="data/S4V1.mp3" preload="auto"></audio>
+    <audio id="voS4V2" src="data/S4V2.mp3" preload="auto"></audio>
+    <audio id="voS4V3" src="data/S4V3.mp3" preload="auto"></audio>
+    <audio id="voS4V4" src="data/S4V4.mp3" preload="auto"></audio>
+    <audio id="voS5V1" src="data/S5V1.mp3" preload="auto"></audio>
+    <audio id="voS5V2" src="data/S5V2.mp3" preload="auto"></audio>
+    <audio id="voS5V3" src="data/S5V3.mp3" preload="auto"></audio>
+    <audio id="voS6V1" src="data/S6V1.mp3" preload="auto"></audio>
+    <audio id="voS6V2" src="data/S6V2.mp3" preload="auto"></audio>
+    <audio id="voS6V3" src="data/S6V3.mp3" preload="auto"></audio>
+    <audio id="voS7V1" src="data/S7V1.mp3" preload="auto"></audio>
+    <audio id="voS7V2" src="data/S7V2.mp3" preload="auto"></audio>
+    <audio id="voS7V3" src="data/S7V3.mp3" preload="auto"></audio>
+    <audio id="voS8V1" src="data/S8V1.mp3" preload="auto"></audio>
+    <audio id="voS8V2" src="data/S8V2.mp3" preload="auto"></audio>
+    <audio id="voS8V3" src="data/S8V3.mp3" preload="auto"></audio>
+    <audio id="voS9V1" src="data/S9V1.mp3" preload="auto"></audio>
+    <audio id="voS9V2" src="data/S9V2.mp3" preload="auto"></audio>
+    <audio id="sfxClick" src="data/SFX_Click.mp3" preload="auto"></audio>
+    <audio id="sfxCorrect" src="data/SFX_Correct.mp3" preload="auto"></audio>
+    <audio id="sfxIncorrect" src="data/SFX_Incorrect.mp3" preload="auto"></audio>
+    <audio id="sfxSnap" src="data/SFX_Snap.mp3" preload="auto"></audio>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM Content Loaded - Script started.");
+
+    // --- GLOBAL STATE & VARIABLES ---
+    const CM_PER_GRID_UNIT = 1; 
+
+    let state = {
+        currentScene: 'startScreen',
+        part1: {
+            step: 0,
+            p1: null,
+            p2: null,
+            isDrawing: false,
+            tempPoint: null,
+            canDraw: false, // Controls all drawing in Part 1 initially
+        },
+        part2: {
+            step: 0, // 0/3: Measurement input, 1/4: Drop Perpendicular click, 2/5: Triangle drag, 6/7: Rearranged
+            activeP: null,
+            activeTriangle: null, 
+            triangleSnapped: false,
+            p1Rearranged: false,
+            p2Rearranged: false,
+            offsetX: 0,
+            offsetY: 0,
+            measurementSubmitted: false, 
+            submitBtnEnabled: false, // Controls submitMeasurementBtn
+            triangleDragEnabled: false, // Controls triangle dragging
+            nextParaBtnEnabled: false, // Controls "Next Parallelogram" button
+        },
+        part3: {
+            activeCountingP: null,
+            gridCounts: { p1: 0, p2: 0 },
+            countedCells: { p1: new Set(), p2: new Set() },
+            offsetX: 0,
+            offsetY: 0,
+            countABCDEnabled: false, // New control for ABCD count button
+            countABEFEnabled: false, // New control for ABEF count button
+            expectedClickableCells: { p1: 0, p2: 0 }, // New: Store total cells user needs to click
+            expectedApproximateSum: { p1: 0, p2: 0 }, // New: Store the sum of valid cell values
+            s7v3Played: false, // New: To track if S7V3 has been played
+            s8v3Played: false, // New: To track if S8V3 has been played
+        },
+        exactAreaP1: 0, 
+        exactAreaP2: 0
+    };
+
+    // Global grid configuration for snapping and drawing
+    const gridConfig = { 
+        cellSize: 40 * 1.5, 
+        subSamples: 5,
+        majorGridFactor: 5, 
+        minorGridColor: '#f0f0f0', 
+        majorGridColor: '#a0a0a0', 
+        majorGridLineWidth: 2 
+    };
+    // Calculate major grid size
+    gridConfig.majorCellSize = gridConfig.cellSize * gridConfig.majorGridFactor;
+
+
+    // Scaled coordinates for 1.5x increase, aligned to grid cells
+    const const_points = {
+        A: { x: 5 * gridConfig.cellSize, y: 7 * gridConfig.cellSize }, 
+        B: { x: (5 + 5) * gridConfig.cellSize, y: 7 * gridConfig.cellSize }, 
+        parallelY: (7 - 4) * gridConfig.cellSize 
+    };
+
+    // --- CANVAS SETUP ---
+    const canvases = {
+        construction: {
+            canvas: document.getElementById('constructionCanvas'),
+            ctx: document.getElementById('constructionCanvas').getContext('2d'),
+        },
+        rearrangement: {
+            canvas: document.getElementById('rearrangementCanvas'),
+            ctx: document.getElementById('rearrangementCanvas').getContext('2d'),
+        },
+        grid: {
+            canvas: document.getElementById('gridCanvas'),
+            ctx: document.getElementById('gridCanvas').getContext('2d'),
+        },
+        comparison: { 
+            canvas: document.getElementById('comparisonCanvas'),
+            ctx: document.getElementById('comparisonCanvas').getContext('2d'),
+        }
+    };
+
+    // --- DOM ELEMENTS ---
+    const dom = {
+        startScreen: document.getElementById('startScreen'),
+        introScreen: document.getElementById('introScreen'),
+        materialsPrecautionsScreen: document.getElementById('materialsPrecautionsScreen'), 
+        mainSimulationContent: document.getElementById('mainSimulationContent'),
+        buttons: {
+            startSimulation: document.getElementById('startSimulationBtn'),
+            continueIntro: document.getElementById('continueIntroBtn'),
+            proceedToSimulation: document.getElementById('proceedToSimulationBtn'), 
+            resetConstruction: document.getElementById('resetConstruction'),
+            nextRearrangementStepContinue: document.getElementById('nextRearrangementStepContinueBtn'),
+            nextRearrangementStepDropPerpendicular: document.getElementById('nextRearrangementStepDropPerpendicularBtn'),
+            testContinueButton: document.getElementById('testContinueButton'), 
+            goToPart2: document.getElementById('goToPart2'),
+            goToPart3: document.getElementById('goToPart3'),
+            countABCD: document.getElementById('countABCD_Btn'),
+            countABEF: document.getElementById('countABEF_Btn'),
+            resetGrid: document.getElementById('resetGrid'),
+            goToPart4: document.getElementById('goToPart4'),
+            restartSimulation: document.getElementById('restartSimulationBtn')
+        },
+        parts: {
+            part1: document.getElementById('part1'),
+            part2: document.getElementById('part2'),
+            part3: document.getElementById('part3'),
+            part4: document.getElementById('part4'),
+        },
+        status: {
+            construction: document.getElementById('constructionStatus'),
+            rearrangement: document.getElementById('rearrangementStatus'),
+            grid: document.getElementById('gridStatus'),
+        },
+        vo: { 
+            vo1: document.getElementById('vo1'),
+            vo2: document.getElementById('vo2'),
+            vo3: document.getElementById('vo3'),
+            vo4: document.getElementById('vo4'),
+            s1v1: document.getElementById('voS1V1'), 
+            s1v2: document.getElementById('voS1V2'),
+            s2v1: document.getElementById('voS2V1'),
+            s2v2: document.getElementById('voS2V2'),
+            s2v3: document.getElementById('voS2V3'),
+            s3v1: document.getElementById('voS3V1'),
+            s3v2: document.getElementById('voS3V2'),
+            s4v1: document.getElementById('voS4V1'), // New VO
+            s4v2: document.getElementById('voS4V2'), // New VO
+            s4v3: document.getElementById('voS4V3'), // New VO
+            s4v4: document.getElementById('voS4V4'), // New VO
+            s5v1: document.getElementById('voS5V1'), // New VO
+            s5v2: document.getElementById('voS5V2'), // New VO
+            s5v3: document.getElementById('voS5V3'), // New VO
+            s6v1: document.getElementById('voS6V1'), // New VO
+            s6v2: document.getElementById('voS6V2'), // New VO
+            s6v3: document.getElementById('voS6V3'), // New VO
+            s7v1: document.getElementById('voS7V1'), // New VO
+            s7v2: document.getElementById('voS7V2'), // New VO
+            s7v3: document.getElementById('voS7V3'), // New VO
+            s8v1: document.getElementById('voS8V1'), // New VO
+            s8v2: document.getElementById('voS8V2'), // New VO
+            s8v3: document.getElementById('voS8V3'),  // New VO
+            s9v1: document.getElementById('voS9V1'), // New VO
+            s9v2: document.getElementById('voS9V2')  // New VO
+        },
+        sfx: { 
+            click: document.getElementById('sfxClick'),
+            correct: document.getElementById('sfxCorrect'),
+            incorrect: document.getElementById('sfxIncorrect'),
+            snap: document.getElementById('sfxSnap')
+        },
+        displays: {
+            areaResults: document.getElementById('areaResults'),
+            finalComparison: document.getElementById('finalComparison'),
+            counter1: document.getElementById('counter1'),
+            counter2: document.getElementById('counter2'),
+            finalExactAreas: document.getElementById('finalExactAreas')
+        },
+        measurementInputSection: document.getElementById('measurementInputSection'),
+        inputBase: document.getElementById('inputBase'),
+        inputHeight: document.getElementById('inputHeight'),
+        submitMeasurementBtn: document.getElementById('submitMeasurementBtn'),
+        measurementFeedback: document.getElementById('measurementFeedback'),
+        heightInputLabel: document.getElementById('heightInputLabel'), 
+    };
+
+    // --- AUDIO CONTROL FUNCTIONS ---
+    let currentVoiceover = null;
+
+    function playAudio(audioElement, volume = 1, loop = false) {
+        if (audioElement) {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+            audioElement.volume = volume;
+            audioElement.loop = loop;
+            audioElement.play().catch(e => console.error("Error playing audio:", e));
+        }
+    }
+
+    function stopAudio(audioElement) {
+        if (audioElement) {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+        }
+    }
+
+    function playVoiceover(voElement) {
+        if (currentVoiceover) {
+            stopAudio(currentVoiceover);
+        }
+        currentVoiceover = voElement;
+        playAudio(voElement, 1); 
+    }
+
+    // Function to play a sequence of voiceovers
+    function playVoiceoverSequence(voElements, index = 0, callback = null) {
+        if (index < voElements.length) {
+            const currentVo = voElements[index];
+            if (currentVo) {
+                playVoiceover(currentVo);
+                currentVo.onended = () => {
+                    playVoiceoverSequence(voElements, index + 1, callback);
+                };
+            } else {
+                playVoiceoverSequence(voElements, index + 1, callback);
+            }
+        } else if (callback) {
+            callback();
+        }
+    }
+
+    function playSFX(sfxElement) {
+        if (sfxElement) {
+            sfxElement.pause();
+            sfxElement.currentTime = 0;
+            sfxElement.play().catch(e => console.error("Error playing SFX:", e));
+        }
+    }
+
+    // --- GEOMETRY CLASSES & HELPERS ---
+    class Parallelogram {
+        constructor(A, B, D, isSecond = false) {
+            this.A = { ...A }; 
+            this.B = { ...B }; 
+            this.D = { ...D }; 
+            this.C = { x: B.x + (D.x - A.x), y: D.y };
+            
+            this.isSecond = isSecond;
+            this.name = isSecond ? 'ABEF' : 'ABCD';
+            this.color = isSecond ? '#4CAF50' : '#2196F3';
+
+            this.perpPoint = { x: this.D.x, y: this.A.y }; 
+
+            this.base = Math.abs(this.B.x - this.A.x) / gridConfig.cellSize * CM_PER_GRID_UNIT;
+            this.height = Math.abs(this.A.y - this.D.y) / gridConfig.cellSize * CM_PER_GRID_UNIT; 
+
+            this.area = this.base * this.height;
+
+            this.vertices = [this.A, this.B, this.C, this.D];
+        }
+
+        draw(ctx, fill = true, overrideColor = null) {
+            console.log("Drawing parallelogram:", this.name, "with vertices:", this.vertices);
+            const color = overrideColor || this.color;
+            ctx.beginPath();
+            ctx.moveTo(this.A.x, this.A.y);
+            ctx.lineTo(this.B.x, this.B.y);
+            ctx.lineTo(this.C.x, this.C.y);
+            ctx.lineTo(this.D.x, this.D.y);
+            ctx.closePath();
+            
+            if (fill) {
+                ctx.fillStyle = color + '80'; 
+                ctx.fill();
+            }
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 4; 
+            ctx.stroke();
+        }
+
+        drawLabels(ctx, offset = {x: 0, y: 0}) { 
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 20px Arial'; 
+            const labels = this.isSecond ? ['A', 'B', 'F', 'E'] : ['A', 'B', 'C', 'D'];
+            const points = [this.A, this.B, this.C, this.D];
+            const offsets = [
+                {x: -25, y: 15}, {x: 15, y: 15}, 
+                {x: 15, y: -15}, {x: -25, y: -15} 
+            ];
+            
+            points.forEach((p, i) => {
+                ctx.fillText(labels[i], p.x + offset.x + offsets[i].x, p.y + offset.y + offsets[i].y);
+            });
+        }
+
+        getTransformationElements() {
+            let dynamicPerpPoint; 
+            let cutTriangleVertices; 
+            let snapTargetDx; 
+            let trapezoidVertices; 
+            let perpLabel; 
+            let basePointForPerp; 
+
+            if (this.D.x < this.A.x) { 
+                dynamicPerpPoint = { x: this.A.x, y: this.D.y }; 
+                cutTriangleVertices = [this.A, this.D, dynamicPerpPoint]; 
+                perpLabel = this.name === 'ABCD' ? 'P' : 'Q';
+                basePointForPerp = this.A;
+                trapezoidVertices = [dynamicPerpPoint, this.C, this.B, this.A];
+                snapTargetDx = this.B.x - this.A.x;
+
+            } else { 
+                dynamicPerpPoint = { x: this.B.x, y: this.C.y }; 
+                cutTriangleVertices = [this.B, this.C, dynamicPerpPoint]; 
+                perpLabel = this.name === 'ABCD' ? 'P' : 'Q';
+                basePointForPerp = this.B;
+                trapezoidVertices = [this.A, this.D, dynamicPerpPoint, this.B];
+                snapTargetDx = this.A.x - this.B.x;
+            }
+
+            return { 
+                dynamicPerpPoint, 
+                cutTriangleVertices, 
+                snapTargetDx, 
+                trapezoidVertices, 
+                perpLabel,
+                basePointForPerp
+            };
+        }
+    }
+    
+    function isPointInPolygon(point, polygonVertices) {
+        let isInside = false;
+        for (let i = 0, j = polygonVertices.length - 1; i < polygonVertices.length; j = i++) {
+            const xi = polygonVertices[i].x, yi = polygonVertices[i].y;
+            const xj = polygonVertices[j].x, yj = polygonVertices[j].y;
+            const intersect = ((yi > point.y) !== (yj > point.y)) &&
+                (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+            if (intersect) isInside = !isInside;
+        }
+        return isInside;
+    }
+
+    function getMousePos(canvas, evt) {
+        const rect = canvas.getBoundingClientRect(); 
+        const scaleX = canvas.width / rect.width;    
+        const scaleY = canvas.height / rect.height;  
+
+        return {
+            x: (evt.clientX - rect.left) * scaleX,  
+            y: (evt.clientY - rect.top) * scaleY    
+        };
+    }
+
+    function drawGridLines(ctx, canvasWidth, canvasHeight) {
+        console.log("drawGridLines called. Canvas dimensions:", canvasWidth, canvasHeight);
+        // Set all grid lines to a consistent thinner width and color
+        ctx.strokeStyle = '#cccccc'; // All grid lines color
+        ctx.lineWidth = 1; // All grid lines width (consistent)
+
+        // Draw all grid lines using the same style
+        for (let x = 0; x <= canvasWidth; x += gridConfig.cellSize) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvasHeight); ctx.stroke();
+        }
+        for (let y = 0; y <= canvasHeight; y += gridConfig.cellSize) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvasWidth, y); ctx.stroke();
+        }
+
+        // Major grid lines (still draw them for visual emphasis, but with same line width and color)
+        ctx.strokeStyle = '#cccccc'; // Consistent with minor lines
+        ctx.lineWidth = 1; // Consistent with minor lines
+        for (let x = 0; x <= canvasWidth; x += gridConfig.majorCellSize) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvasHeight); ctx.stroke();
+        }
+        for (let y = 0; y <= canvasHeight; y += gridConfig.majorCellSize) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvasWidth, y); ctx.stroke();
+        }
+    }
+
+    // --- PART 1: CONSTRUCTION ---
+    function initConstruction() {
+        console.log("Initializing Part 1: Construction");
+        state.part1.step = 0;
+        state.part1.p1 = null;
+        state.part1.p2 = null;
+        state.part1.isDrawing = false;
+        state.part1.tempPoint = null;
+        state.part1.canDraw = false; // Initially disable drawing for both P1 and P2
+        canvases.construction.canvas.style.cursor = 'default';
+
+        dom.buttons.goToPart2.classList.add('hidden');
+        dom.status.construction.textContent = "Please wait for instructions to draw the first parallelogram.";
+        
+        // Play sequence of VOs for Part 1 introduction
+        playVoiceoverSequence([dom.vo.s1v1, dom.vo.s1v2, dom.vo.s2v1, dom.vo.s2v2], 0, () => {
+            // Callback after s2v2 finishes
+            state.part1.canDraw = true; // Enable drawing for ABCD (P1)
+            canvases.construction.canvas.style.cursor = 'crosshair';
+            dom.status.construction.textContent = "This horizontal segment is your fixed base — AB. Draw a line upward from point A to define the height. The top point will snap to the grid.";
+        });
+
+        drawConstructionScene();
+    }
+
+    canvases.construction.canvas.addEventListener('mousedown', e => {
+        // Restrict drawing ABCD line until s2v2 is finished.
+        // Restrict drawing ABEF line until s3v2 is finished.
+        if (!state.part1.canDraw || state.part1.step >= 2) {
+             console.log("Drawing prevented: canDraw is false or step is too advanced.");
+             return;
+        }
+        playSFX(dom.sfx.click); 
+        const mousePos = getMousePos(canvases.construction.canvas, e);
+
+        if (Math.hypot(mousePos.x - const_points.A.x, mousePos.y - const_points.A.y) < 30) { 
+            state.part1.isDrawing = true;
+            state.part1.tempPoint = { x: mousePos.x, y: mousePos.y };
+        }
+    });
+
+    canvases.construction.canvas.addEventListener('mousemove', e => {
+        if (!state.part1.isDrawing) return;
+        const mousePos = getMousePos(canvases.construction.canvas, e);
+        
+        const offsetXFromA = mousePos.x - const_points.A.x;
+        const maxSlantUnits = 4; 
+        const maxSlantX = maxSlantUnits * gridConfig.cellSize; 
+
+        const clampedOffsetX = Math.min(Math.max(offsetXFromA, -maxSlantX), maxSlantX);
+        const snappedOffsetX = Math.round(clampedOffsetX / gridConfig.cellSize) * gridConfig.cellSize;
+        const snappedX = const_points.A.x + snappedOffsetX;
+        
+        state.part1.tempPoint = { x: snappedX, y: mousePos.y }; 
+        drawConstructionScene();
+    });
+
+    canvases.construction.canvas.addEventListener('mouseup', e => {
+        if (!state.part1.isDrawing) return;
+        state.part1.isDrawing = false;
+        
+        const mousePos = getMousePos(canvases.construction.canvas, e);
+        
+        const offsetXFromA = mousePos.x - const_points.A.x;
+        const maxSlantUnits = 4; 
+        const maxSlantX = maxSlantUnits * gridConfig.cellSize; 
+
+        const clampedOffsetX = Math.min(Math.max(offsetXFromA, -maxSlantX), maxSlantX);
+        const snappedOffsetX = Math.round(clampedOffsetX / gridConfig.cellSize) * gridConfig.cellSize;
+        const snappedX = const_points.A.x + snappedOffsetX;
+        
+        const newPoint = { x: snappedX, y: const_points.parallelY };
+
+        if (Math.abs(newPoint.x - const_points.A.x) < 5) { 
+            dom.status.construction.textContent = "❌ Side is too vertical and would overlap with point A. Please try a different angle.";
+            playSFX(dom.sfx.incorrect);
+            setTimeout(() => { 
+                dom.status.construction.textContent = state.part1.step === 0 ? "This horizontal segment is your fixed base — AB. Draw a line upward from point A to define the height. The top point will snap to the grid." : "Draw another line from point A with a different angle. The top point will snap to the grid.";
+                drawConstructionScene(); 
+            }, 3000); 
+            return;
+        }
+
+        if (state.part1.step === 0) { 
+            state.part1.p1 = new Parallelogram(const_points.A, const_points.B, newPoint, false);
+            state.part1.step = 1; // P1 is now constructed
+            console.log("P1 constructed:", state.part1.p1); 
+            playSFX(dom.sfx.correct);
+            dom.status.construction.textContent = "Well done! Parallelogram ABCD is now complete. Please wait for instructions to draw the next parallelogram.";
+            state.part1.canDraw = false; // Disable drawing until s3v2 finishes
+
+            // Play S2V3 first
+            playVoiceover(dom.vo.s2v3);
+            // After S2V3 finishes, provide instructions for drawing P2 with S3V1 and S3V2
+            dom.vo.s2v3.onended = () => {
+                playVoiceoverSequence([dom.vo.s3v1, dom.vo.s3v2], 0, () => {
+                    // Callback after s3v2 finishes
+                    state.part1.canDraw = true; // Re-enable drawing for ABEF (P2)
+                    dom.status.construction.textContent = "Now, draw another line upward from point A with a different angle. The top point will snap to the grid.";
+                    canvases.construction.canvas.style.cursor = 'crosshair';
+                });
+            };
+
+        } else if (state.part1.step === 1) { // User is drawing P2
+            // User can draw ABEF line only after s3v2 is finished
+            if (!state.part1.canDraw) {
+                console.log("Drawing ABEF prevented: s3v2 not finished.");
+                return;
+            }
+
+            if (Math.abs(newPoint.x - state.part1.p1.D.x) < 5) { 
+                dom.status.construction.textContent = "❌ Please choose a different angle for the second parallelogram. Its top point is too close to the first one.";
+                playSFX(dom.sfx.incorrect);
+                setTimeout(() => { 
+                    dom.status.construction.textContent = "Draw another line from point A with a different angle. The top point will snap to the grid."; 
+                }, 3000); 
+                return;
+            }
+            state.part1.p2 = new Parallelogram(const_points.A, const_points.B, newPoint, true);
+            state.part1.step = 2; // P2 is now constructed
+            console.log("P2 constructed:", state.part1.p2); 
+            dom.status.construction.textContent = "Excellent! Both parallelograms are now formed on the same base AB, and between the same parallels. You can now continue to Part 2.";
+            state.part1.canDraw = false; // Disable drawing after both are done
+            canvases.construction.canvas.style.cursor = 'default';
+            playSFX(dom.sfx.correct);
+            
+            // Now that P2 is drawn, the button to Part 2 can appear.
+            dom.buttons.goToPart2.classList.remove('hidden'); 
+        }
+        drawConstructionScene();
+    });
+
+    function drawConstructionScene() {
+        const { ctx, canvas } = canvases.construction;
+        if (!ctx) { console.error("Construction canvas context not found."); return; }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        drawGridLines(ctx, canvas.width, canvas.height);
+
+        // Draw parallel dashed lines
+        ctx.strokeStyle = '#ddd';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]); // Set to dotted
+        ctx.beginPath();
+        ctx.moveTo(0, const_points.parallelY); // This is the top parallel line
+        ctx.lineTo(canvas.width, const_points.parallelY);
+        ctx.moveTo(0, const_points.A.y); // This is the bottom parallel line (where base AB lies)
+        ctx.lineTo(canvas.width, const_points.A.y);
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset to solid line
+
+        ctx.strokeStyle = '#FF5722';
+        ctx.lineWidth = 6; 
+        ctx.beginPath();
+        ctx.moveTo(const_points.A.x, const_points.A.y);
+        ctx.lineTo(const_points.B.x, const_points.B.y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#FF5722';
+        ['A', 'B'].forEach(label => {
+            const point = const_points[label];
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 8, 0, 2 * Math.PI); 
+            ctx.fill();
+        });
+        
+        if (!state.part1.p1) { 
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 20px Arial'; 
+            ctx.fillText('A', const_points.A.x - 30, const_points.A.y + 15); 
+            ctx.fillText('B', const_points.B.x + 15, const_points.B.y + 15); 
+        }
+
+        if(state.part1.p1) { state.part1.p1.draw(ctx); state.part1.p1.drawLabels(ctx); } 
+        if(state.part1.p2) { state.part1.p2.draw(ctx); state.part1.p2.drawLabels(ctx); }
+        
+        if (state.part1.isDrawing && state.part1.tempPoint) {
+            ctx.strokeStyle = '#FF9800';
+            ctx.lineWidth = 3; 
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(const_points.A.x, const_points.A.y);
+            ctx.lineTo(state.part1.tempPoint.x, const_points.parallelY); 
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+    }
+
+    dom.buttons.resetConstruction.addEventListener('click', () => {
+        playSFX(dom.sfx.click);
+        initConstruction();
+    });
+
+    // --- PART 2: REARRANGEMENT ---
+    function initRearrangement(p = null) {
+        console.log("Initializing Part 2: Rearrangement");
+        if (!state.part1.p1) {
+            console.error("ERROR: Parallelogram from Part 1 (ABCD) is not defined. Cannot initialize Part 2.");
+            dom.status.rearrangement.textContent = "Error: Please complete Part 1 first to create parallelograms.";
+            return; 
+        }
+
+        state.part2.activeP = p || state.part1.p1;
+        state.part2.step = (state.part2.activeP === state.part1.p1) ? 0 : 3; // Start in measurement input phase
+        state.part2.activeTriangle = null; 
+        state.part2.triangleSnapped = false;
+        state.part2.measurementSubmitted = false; 
+        state.part2.submitBtnEnabled = false; // Disable submit button initially
+        state.part2.triangleDragEnabled = false; // Disable triangle dragging initially
+        state.part2.nextParaBtnEnabled = false; // Disable "Next Parallelogram" button initially
+        
+        canvases.rearrangement.canvas.width = 1140; 
+        canvases.rearrangement.canvas.height = 525;
+
+        const targetAX = 7 * gridConfig.cellSize; 
+        const targetDY = 2 * gridConfig.cellSize; 
+
+        state.part2.offsetX = targetAX - state.part2.activeP.A.x;
+        state.part2.offsetY = targetDY - state.part2.activeP.D.y;
+
+        console.log("Part 2 activeP:", state.part2.activeP.name, state.part2.activeP); // Log activeP
+        console.log("activeP A:", state.part2.activeP.A, "D:", state.part2.activeP.D);
+        console.log("Calculated target (X, Y):", targetAX, targetDY);
+        console.log("Calculated offsets (X, Y):", state.part2.offsetX, state.part2.offsetY);
+
+        // Always start Part 2 in the measurement input phase
+        dom.measurementInputSection.classList.remove('hidden'); 
+        dom.inputBase.value = '';
+        dom.inputHeight.value = '';
+        dom.measurementFeedback.textContent = '';
+        dom.inputBase.disabled = false;
+        dom.inputHeight.disabled = false;
+        dom.submitMeasurementBtn.disabled = true; // Disabled until S4V1 finishes
+        
+        // Ensure all relevant buttons are initially hidden or disabled as appropriate for the starting state
+        dom.buttons.nextRearrangementStepContinue.classList.add('hidden'); 
+        dom.buttons.nextRearrangementStepContinue.disabled = true; 
+        dom.buttons.nextRearrangementStepDropPerpendicular.classList.add('hidden');
+        dom.buttons.testContinueButton.classList.add('hidden'); 
+        dom.buttons.goToPart3.classList.add('hidden'); 
+
+        dom.displays.areaResults.classList.add('hidden'); 
+
+        canvases.rearrangement.canvas.style.cursor = 'default'; 
+        updateRearrangementStatusVO(); 
+
+        // Play S4V1 as soon as Part 2 loads and input scene is visible
+        playVoiceover(dom.vo.s4v1);
+        dom.vo.s4v1.onended = () => {
+            state.part2.submitBtnEnabled = true; // Enable submit button after S4V1 finishes
+            dom.submitMeasurementBtn.disabled = false; // Enable the actual button
+            console.log("S4V1 finished, submit button enabled.");
+        };
+
+        drawRearrangementScene(); 
+    }
+
+    function drawRearrangementScene() {
+        const { ctx, canvas } = canvases.rearrangement;
+        if (!ctx) { 
+            console.error("Rearrangement canvas context not found."); 
+            return; 
+        }
+        
+        console.log("drawRearrangementScene called for Part 2. Current step:", state.part2.step); 
+        console.log("Canvas dimensions:", canvas.width, canvas.height);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawGridLines(ctx, canvas.width, canvas.height);
+
+        const p = state.part2.activeP;
+        if (!p) {
+            console.error("No active parallelogram (state.part2.activeP is null). Cannot draw parallelogram in Part 2.");
+            return;
+        }
+
+        ctx.save();
+        ctx.translate(state.part2.offsetX, state.part2.offsetY);
+        console.log("Context translated by:", state.part2.offsetX, state.part2.offsetY); 
+
+        
+        const { dynamicPerpPoint, cutTriangleVertices, snapTargetDx, trapezoidVertices, perpLabel, basePointForPerp } = p.getTransformationElements();
+
+        if (state.part2.step === 0 || state.part2.step === 3 || 
+            state.part2.step === 1 || state.part2.step === 4) { 
+            
+            console.log(`Drawing full parallelogram for step ${state.part2.step}, activeTriangle: ${state.part2.activeTriangle}`);
+            p.draw(ctx); 
+
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(p.A.x, p.A.y + 40); 
+            ctx.lineTo(p.B.x, p.B.y + 40); 
+            ctx.stroke();
+
+            drawArrow(ctx, p.A.x, p.A.y + 40, p.A.x + 10, p.A.y + 40, 15); 
+            drawArrow(ctx, p.B.x, p.B.y + 40, p.B.x - 10, p.B.y + 40, 15); 
+
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${p.base.toFixed(0)} cm`, p.A.x + (p.B.x - p.A.x) / 2, p.A.y + 60);
+
+            const heightLineX = p.A.x - (5 * gridConfig.cellSize); 
+            const heightLineY1 = p.A.y;
+            const heightLineY2 = p.D.y;
+
+            ctx.beginPath();
+            ctx.moveTo(heightLineX, heightLineY1);
+            ctx.lineTo(heightLineX, heightLineY2);
+            ctx.stroke();
+
+            drawArrow(ctx, heightLineX, heightLineY1, heightLineX, heightLineY1 - 10, 15); 
+            drawArrow(ctx, heightLineX, heightLineY2, heightLineX, heightLineY2 + 10, 15); 
+
+            ctx.fillText(`${p.height.toFixed(0)} cm`, heightLineX - 25, heightLineY2 + (heightLineY1 - heightLineY2) / 2);
+            ctx.textAlign = 'start'; 
+
+            if (state.part2.step === 1 || state.part2.step === 4) {
+                console.log("Drawing dashed perpendicular line."); 
+                ctx.beginPath();
+                ctx.strokeStyle = '#d32f2f'; 
+                ctx.lineWidth = 3; 
+                ctx.setLineDash([5, 5]); 
+                ctx.moveTo(basePointForPerp.x, basePointForPerp.y);
+                ctx.lineTo(dynamicPerpPoint.x, dynamicPerpPoint.y);
+                ctx.stroke();
+                ctx.setLineDash([]); 
+
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 20px Arial'; 
+                ctx.fillText(perpLabel, dynamicPerpPoint.x - (p.D.x < p.A.x ? 25 : 10), dynamicPerpPoint.y + 30);
+            }
+
+        } else { 
+            console.log(`Drawing split parallelogram for step ${state.part2.step}, activeTriangle: ${state.part2.activeTriangle}`);
+            ctx.beginPath();
+            ctx.moveTo(trapezoidVertices[0].x, trapezoidVertices[0].y);
+            for (let i = 1; i < trapezoidVertices.length; i++) {
+                ctx.lineTo(trapezoidVertices[i].x, trapezoidVertices[i].y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = p.color + '80';
+            ctx.fill();
+            ctx.strokeStyle = p.color;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            let displayTriangleVertices = cutTriangleVertices; 
+
+            if (state.part2.triangleSnapped) {
+                displayTriangleVertices = cutTriangleVertices.map(v => ({ 
+                    x: v.x + snapTargetDx, 
+                    y: v.y 
+                }));
+            } else if ((state.part2.step === 2 || state.part2.step === 5) && state.part2.activeTriangle && state.part2.activeTriangle.isDragging) {
+                displayTriangleVertices = state.part2.activeTriangle.points.map(v => ({ 
+                    x: v.x + state.part2.activeTriangle.offset.x, 
+                    y: v.y + state.part2.activeTriangle.offset.y 
+                }));
+            } else if (state.part2.step === 2 || state.part2.step === 5) { 
+                displayTriangleVertices = cutTriangleVertices; 
+            }
+            
+            ctx.beginPath();
+            ctx.moveTo(displayTriangleVertices[0].x, displayTriangleVertices[0].y);
+            ctx.lineTo(displayTriangleVertices[1].x, displayTriangleVertices[1].y);
+            ctx.lineTo(displayTriangleVertices[2].x, displayTriangleVertices[2].y);
+            ctx.closePath();
+            
+            const triColor = (state.part2.step === 1 || state.part2.step === 4 || state.part2.step === 2 || state.part2.step === 5) ? '#FF9800' : p.color; 
+            ctx.fillStyle = triColor + '90';
+            ctx.fill();
+            ctx.strokeStyle = triColor;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.strokeStyle = '#d32f2f';
+            ctx.lineWidth = 3; 
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(basePointForPerp.x, basePointForPerp.y);
+            ctx.lineTo(dynamicPerpPoint.x, dynamicPerpPoint.y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 20px Arial'; 
+            ctx.fillText(perpLabel, dynamicPerpPoint.x - (p.D.x < p.A.x ? 25 : 10), dynamicPerpPoint.y + 30);
+        }
+
+        p.drawLabels(ctx);
+
+        if(state.part2.triangleSnapped) {
+            ctx.font = 'bold 24px Arial'; 
+            ctx.fillStyle = '#333';
+            const midBaseX = p.A.x + (p.B.x - p.A.x) / 2;
+            ctx.fillText(`Base (AB) = ${p.base.toFixed(0)} cm`, midBaseX - 90, p.A.y + 35); 
+            
+            const heightX = (p.D.x < p.A.x) ? p.A.x : p.B.x; 
+            const heightY = p.D.y + (p.A.y - p.D.y) / 2; 
+            ctx.fillText(`Height (${perpLabel}L) = ${p.height.toFixed(0)} cm`, heightX - 130, heightY); 
+        }
+
+        ctx.restore(); 
+    }
+
+    function drawArrow(ctx, x, y, toX, toY, size) {
+        const angle = Math.atan2(toY - y, toX - x);
+        ctx.save();
+        ctx.translate(toX, toY);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-size, size / 2);
+        ctx.lineTo(-size, -size / 2);
+        ctx.closePath();
+        ctx.fillStyle = '#333';
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function updateRearrangementStatusVO() {
+        const pName = state.part2.activeP.name;
+        const { perpLabel } = state.part2.activeP.getTransformationElements();
+        dom.heightInputLabel.textContent = `Height (Perpendicular):`; 
+
+        // Always hide area results until rearranged
+        dom.displays.areaResults.classList.add('hidden');
+
+        // Hide all action buttons by default, then selectively show
+        dom.buttons.nextRearrangementStepContinue.classList.add('hidden'); 
+        dom.buttons.nextRearrangementStepContinue.disabled = true; // Explicitly disable
+        dom.buttons.nextRearrangementStepDropPerpendicular.classList.add('hidden');
+        dom.buttons.testContinueButton.classList.add('hidden'); 
+        dom.buttons.goToPart3.classList.add('hidden'); 
+
+        if (state.part2.step === 0 || state.part2.step === 3) { // Measurement Input Phase
+            console.log("Part 2, Step:", state.part2.step, "- Showing measurement input.");
+            dom.measurementInputSection.classList.remove('hidden');
+            // Enable "Continue" only if measurement is submitted and submitBtnEnabled
+            dom.buttons.nextRearrangementStepContinue.classList.remove('hidden');
+            dom.buttons.nextRearrangementStepContinue.disabled = !(state.part2.measurementSubmitted && state.part2.submitBtnEnabled);
+
+            dom.status.rearrangement.textContent = `Identify the base and height of parallelogram ${pName}. Enter their values in the fields above and click 'Submit Values'.`;
+            dom.vo.vo2.textContent = `Look at parallelogram ${pName}. What are its base and perpendicular height in centimeters? Enter the values in the fields above and click submit.`;
+
+        } else if (state.part2.step === 1 || state.part2.step === 4) { // Drop Perpendicular Phase (after continue)
+            console.log("Part 2, Step:", state.part2.step, "- Showing drop perpendicular button.");
+            dom.measurementInputSection.classList.add('hidden'); 
+            dom.buttons.nextRearrangementStepDropPerpendicular.classList.remove('hidden'); 
+            dom.buttons.nextRearrangementStepDropPerpendicular.textContent = "Drop Perpendicular"; 
+            dom.buttons.nextRearrangementStepDropPerpendicular.disabled = false; // Enabled by default here
+
+            dom.status.rearrangement.textContent = `Click 'Drop Perpendicular' to cut the parallelogram and prepare for rearrangement.`;
+            dom.vo.vo2.textContent = `Now click 'Drop Perpendicular' to cut the parallelogram along its height, forming a triangle.`;
+
+        } else if (state.part2.step === 2 || state.part2.step === 5) { // Triangle Dragging Phase
+            console.log("Part 2, Step:", state.part2.step, "- Showing triangle dragging phase. HIDING test button.");
+            dom.measurementInputSection.classList.add('hidden'); 
+            dom.buttons.nextRearrangementStepDropPerpendicular.classList.remove('hidden'); 
+            dom.buttons.nextRearrangementStepDropPerpendicular.disabled = true; // Disabled during dragging
+            dom.buttons.testContinueButton.classList.add('hidden'); 
+            dom.status.rearrangement.textContent = `Drag the red triangle to the other side to form a rectangle.`;
+            dom.vo.vo2.textContent = `Now, drag the cut triangle and snap it to the opposite side of the parallelogram to form a rectangle.`;
+
+        } else if (state.part2.step === 6) { // ABCD Rearranged
+            console.log("Part 2, Step:", state.part2.step, "- ABCD Rearranged. Showing Next Parallelogram button.");
+            dom.measurementInputSection.classList.add('hidden');
+            dom.displays.areaResults.classList.remove('hidden'); 
+            state.exactAreaP1 = state.part2.activeP.area;
+            dom.displays.areaResults.innerHTML = `The base is AB = ${state.part2.activeP.base.toFixed(0)} cm, and the height is ${perpLabel} = ${state.part2.activeP.height.toFixed(0)} cm. <br> Area = base × height = ${state.part2.activeP.base.toFixed(0)} × ${state.part2.activeP.height.toFixed(0)} = ${state.part2.activeP.area.toFixed(0)} cm².`;
+            
+            dom.buttons.nextRearrangementStepDropPerpendicular.classList.remove('hidden'); 
+            dom.buttons.nextRearrangementStepDropPerpendicular.textContent = "Next Parallelogram";
+            // The button will be enabled after S4V4 finishes, controlled by nextParaBtnEnabled
+            dom.buttons.nextRearrangementStepDropPerpendicular.disabled = !state.part2.nextParaBtnEnabled; 
+            dom.status.rearrangement.textContent = `Parallelogram ${pName} is now transformed into a rectangle. Click 'Next Parallelogram'.`;
+            dom.vo.vo2.textContent = `We’ve now transformed ${pName} into a rectangle. The base is AB, and the height is ${perpLabel}. Now let's do the same for parallelogram ABEF.`;
+
+        } else if (state.part2.step === 7) { // ABEF Rearranged
+            console.log("Part 2, Step:", state.part2.step, "- ABEF Rearranged. Showing Continue to Part 3 button.");
+            dom.measurementInputSection.classList.add('hidden');
+            dom.displays.areaResults.classList.remove('hidden'); 
+            state.exactAreaP2 = state.part2.activeP.area;
+            dom.displays.areaResults.innerHTML = `The base is AB = ${state.part2.activeP.base.toFixed(0)} cm, and the height is ${perpLabel} = ${state.part2.activeP.height.toFixed(0)} cm. <br> Area = base × height = ${state.part2.activeP.base.toFixed(0)} × ${state.part2.activeP.height.toFixed(0)} = ${state.part2.activeP.area.toFixed(0)} cm².`;
+
+            dom.buttons.nextRearrangementStepDropPerpendicular.classList.add('hidden'); 
+            dom.buttons.goToPart3.classList.remove('hidden'); 
+            dom.status.rearrangement.textContent = `Parallelogram ${pName} is now transformed into a rectangle. Click 'Continue to Part 3' to proceed.`;
+            dom.vo.vo2.textContent = "Perfect! We’ve formed another rectangle with the same base and height. Area = base × height. Since both base and height are the same in both cases, the areas are equal.";
+        }
+    }
+
+    let currentDragTriangle = null; 
+    let dragStartMouse = { x: 0, y: 0 };
+
+    canvases.rearrangement.canvas.addEventListener('mousedown', e => {
+        // User should be able to drag APD only when s4v3 is finished.
+        // User should be able to drag BQF only after s5v2 is finished.
+        if (!state.part2.triangleDragEnabled || (state.part2.step !== 2 && state.part2.step !== 5)) {
+            console.log("Dragging prevented: triangleDragEnabled is false or not in correct step.");
+            return; 
+        }
+
+        const mousePos = getMousePos(canvases.rearrangement.canvas, e);
+        const p = state.part2.activeP;
+        
+        const { cutTriangleVertices } = p.getTransformationElements();
+
+        const triangleVerticesForHit = cutTriangleVertices.map(v => ({
+            x: v.x + state.part2.offsetX,
+            y: v.y + state.part2.offsetY
+        }));
+
+        if (isPointInPolygon(mousePos, triangleVerticesForHit)) {
+            state.part2.activeTriangle = {
+                points: cutTriangleVertices, 
+                color: p.color,
+                originalP: p,
+                isDragging: true,
+                offset: { x: 0, y: 0 } 
+            };
+            dragStartMouse = { x: mousePos.x, y: mousePos.y };
+            canvases.rearrangement.canvas.style.cursor = 'grabbing';
+            playSFX(dom.sfx.click); 
+            // Do not update status VO here, let the mousemove/mouseup handle visual updates
+        }
+    });
+
+    canvases.rearrangement.canvas.addEventListener('mousemove', e => {
+        if (!state.part2.activeTriangle || !state.part2.activeTriangle.isDragging) return;
+
+        const mousePos = getMousePos(canvases.rearrangement.canvas, e);
+        state.part2.activeTriangle.offset.x = mousePos.x - dragStartMouse.x;
+        state.part2.activeTriangle.offset.y = mousePos.y - dragStartMouse.y;
+        
+        drawRearrangementScene();
+    });
+
+    canvases.rearrangement.canvas.addEventListener('mouseup', e => {
+        if (!state.part2.activeTriangle || !state.part2.activeTriangle.isDragging) return;
+
+        state.part2.activeTriangle.isDragging = false;
+        canvases.rearrangement.canvas.style.cursor = 'default';
+
+        const p = state.part2.activeTriangle.originalP;
+        const { snapTargetDx } = p.getTransformationElements(); 
+        
+        const currentAxShift = state.part2.activeTriangle.offset.x;
+
+        const snapThreshold = 30 * 1.5; 
+        if (Math.abs(currentAxShift - snapTargetDx) < snapThreshold && Math.abs(state.part2.activeTriangle.offset.y) < snapThreshold) {
+            state.part2.triangleSnapped = true;
+            state.part2.activeTriangle = null; 
+            playSFX(dom.sfx.snap); 
+            
+            if (p === state.part1.p1) {
+                playVoiceover(dom.vo.s4v4); // Play S4V4 when ABCD triangle snaps
+                state.part2.step = 6; 
+                state.part2.p1Rearranged = true;
+                dom.vo.s4v4.onended = () => {
+                    state.part2.nextParaBtnEnabled = true; // Enable "Next Parallelogram" button after S4V4 finishes
+                    updateRearrangementStatusVO(); // Update to show enabled button
+                };
+            } else {
+                playVoiceover(dom.vo.s5v3); // Play S5V3 when ABEF triangle snaps
+                state.part2.step = 7; 
+                state.part2.p2Rearranged = true;
+            }
+            state.part2.triangleDragEnabled = false; // Disable dragging after snap
+            updateRearrangementStatusVO();
+            drawRearrangementScene();
+        } else {
+            state.part2.activeTriangle = null;
+            state.part2.triangleSnapped = false;
+            drawRearrangementScene(); 
+            dom.status.rearrangement.textContent = "Triangle not snapped. Try dragging it to the correct position!";
+            playSFX(dom.sfx.incorrect); 
+            updateRearrangementStatusVO(); 
+        }
+    });
+
+    // --- PART 3: GRID COUNTING ---
+    function initGrid() {
+        console.log("Initializing Part 3: Grid Counting");
+        state.part3.activeCountingP = null;
+        state.part3.gridCounts = { p1: 0, p2: 0 };
+        state.part3.countedCells = { p1: new Set(), p2: new Set() };
+        state.part3.expectedClickableCells = { p1: 0, p2: 0 }; // Reset
+        state.part3.expectedApproximateSum = { p1: 0, p2: 0 }; // Reset
+        state.part3.s7v3Played = false; // Reset
+        state.part3.s8v3Played = false; // Reset
+
+        dom.displays.counter1.textContent = "0";
+        dom.displays.counter2.textContent = "0";
+        dom.buttons.countABCD.disabled = true; // Disable until s7v2 finished
+        dom.buttons.countABEF.disabled = true;  // Disable until s8v2 finished
+        dom.displays.finalComparison.classList.add('hidden');
+        dom.buttons.goToPart4.classList.add('hidden'); 
+        dom.status.grid.textContent = "Please wait for instructions before counting blocks.";
+        dom.vo.vo3.textContent = `Finally, let’s estimate and compare the area of both parallelograms by counting how many unit blocks they cover on the grid. Each square represents ${CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} square centimeters. Let’s start with parallelogram ABCD.`;
+        
+        const targetAX_part3 = 7 * gridConfig.cellSize; 
+        const targetParallelY_part3 = 2 * gridConfig.cellSize; 
+
+        state.part3.offsetX = targetAX_part3 - state.part1.p1.A.x;
+        state.part3.offsetY = targetParallelY_part3 - const_points.parallelY;
+
+        // Pre-calculate expected counts and sums for both parallelograms
+        const cols = Math.floor(canvases.grid.canvas.width / gridConfig.cellSize);
+        const rows = Math.floor(canvases.grid.canvas.height / gridConfig.cellSize);
+
+        [state.part1.p1, state.part1.p2].forEach((p, pIndex) => {
+            if (!p) return; // Should not happen if Part 1 is completed
+            const pKey = pIndex === 0 ? 'p1' : 'p2';
+            let clickableCount = 0;
+            let approxSum = 0;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cellOrigin = { x: c * gridConfig.cellSize, y: r * gridConfig.cellSize };
+                    const coverage = getCellCoverage(cellOrigin, p, state.part3.offsetX, state.part3.offsetY);
+                    if (coverage.ratio > 0) { // If any part of the cell is covered, it's clickable
+                        clickableCount++;
+                        approxSum += coverage.value; // Add its value to the sum
+                    }
+                }
+            }
+            state.part3.expectedClickableCells[pKey] = clickableCount;
+            state.part3.expectedApproximateSum[pKey] = approxSum;
+            console.log(`Pre-calculated for ${pKey.toUpperCase()}: Clickable Cells = ${clickableCount}, Approximate Sum = ${approxSum}`);
+        });
+
+        drawGridScene();
+        
+        // Play sequence of VOs for Part 3 introduction
+        playVoiceoverSequence([dom.vo.s6v1, dom.vo.s6v2, dom.vo.s6v3, dom.vo.s7v1, dom.vo.s7v2], 0, () => {
+            state.part3.countABCDEnabled = true; // Enable count for ABCD after s7v2 finishes
+            dom.buttons.countABCD.disabled = false; // Enable the actual button
+            dom.status.grid.textContent = "Select a parallelogram to start counting its blocks.";
+        });
+    }
+    
+    function drawGridScene() {
+        const { ctx, canvas } = canvases.grid;
+        if (!ctx) { console.error("Grid canvas context not found."); return; }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        drawGridLines(ctx, canvas.width, canvas.height);
+
+        const cols = Math.floor(canvas.width / gridConfig.cellSize);
+
+        if (state.part3.activeCountingP) { 
+            const pKey = state.part3.activeCountingP;
+            const cells = state.part3.countedCells[pKey];
+            const p = (pKey === 'p1') ? state.part1.p1 : state.part1.p2;
+
+            cells.forEach(cellIndex => {
+                const col = cellIndex % cols;
+                const row = Math.floor(cellIndex / cols);
+                const cellX = col * gridConfig.cellSize;
+                const cellY = row * gridConfig.cellSize;
+                
+                const coverage = getCellCoverage({x: cellX, y: cellY}, p, state.part3.offsetX, state.part3.offsetY);
+                const color = getCoverageColor(coverage.ratio);
+                
+                if (color) {
+                    ctx.fillStyle = color + 'CC'; 
+                    ctx.fillRect(cellX, cellY, gridConfig.cellSize, gridConfig.cellSize);
+                    ctx.strokeStyle = "#333";
+                    ctx.strokeRect(cellX, cellY, gridConfig.cellSize, gridConfig.cellSize);
+                }
+            });
+        }
+        
+        ctx.save();
+        ctx.translate(state.part3.offsetX, state.part3.offsetY);
+        
+        const opacityP1 = (state.part3.activeCountingP === 'p1' || state.part3.activeCountingP === null) ? 1.0 : 0.2; 
+        const opacityP2 = (state.part3.activeCountingP === 'p2' || state.part3.activeCountingP === null) ? 1.0 : 0.2; 
+
+        if(state.part1.p1) {
+            ctx.globalAlpha = opacityP1;
+            state.part1.p1.draw(ctx);
+            state.part1.p1.drawLabels(ctx);
+        }
+        if(state.part1.p2) {
+            ctx.globalAlpha = opacityP2;
+            state.part1.p2.draw(ctx);
+            state.part1.p2.drawLabels(ctx);
+        }
+        ctx.globalAlpha = 1.0; 
+
+        ctx.restore();
+    }
+    
+    function getCellCoverage(cellOrigin, p, offsetX, offsetY) {
+        const pVertices = p.vertices.map(v => ({ x: v.x + offsetX, y: v.y + offsetY }));
+        
+        let hits = 0;
+        const totalSamples = gridConfig.subSamples * gridConfig.subSamples;
+        const step = gridConfig.cellSize / gridConfig.subSamples;
+
+        for (let i = 0; i < gridConfig.subSamples; i++) {
+            for (let j = 0; j < gridConfig.subSamples; j++) {
+                const samplePoint = {
+                    x: cellOrigin.x + (i + 0.5) * step,
+                    y: cellOrigin.y + (j + 0.5) * step,
+                };
+                if (isPointInPolygon(samplePoint, pVertices)) hits++;
+            }
+        }
+        const ratio = hits / totalSamples;
+        let value = 0;
+        // Logic for counting value based on criteria:
+        // Full/mostly covered (ratio > 0.5) -> +1
+        // Half covered (ratio >= 0.4 && ratio <= 0.6) -> +0.5
+        // Less than half (ratio > 0 but < 0.4) -> +0 (ignored for sum, but still clickable)
+        if (ratio > 0.5) value = 1; 
+        else if (ratio >= 0.4 && ratio <= 0.6) value = 0.5; 
+        
+        return { ratio, value };
+    }
+
+    function getCoverageColor(ratio) {
+        if (ratio >= 0.9) return '#4CAF50'; 
+        if (ratio > 0.5) return '#FFEB3B';  
+        if (ratio >= 0.4 && ratio <= 0.6) return '#FF9800'; 
+        if (ratio > 0) return '#BDBDBD';    
+        return null; 
+    }
+
+    canvases.grid.canvas.addEventListener('click', e => {
+        if (!state.part3.activeCountingP) {
+            dom.status.grid.textContent = "⚠️ Please select which parallelogram you want to count for first!";
+            playSFX(dom.sfx.incorrect);
+            return;
+        }
+
+        // Add restriction: count for ABCD button should work only after s7v2 is finished
+        if (state.part3.activeCountingP === 'p1' && !state.part3.countABCDEnabled) {
+            console.log("Count for ABCD prevented: S7V2 not finished.");
+            return;
+        }
+        // Add restriction: ABEF count button should work after s8v2
+        if (state.part3.activeCountingP === 'p2' && !state.part3.countABEFEnabled) {
+            console.log("Count for ABEF prevented: S8V2 not finished.");
+            return;
+        }
+
+        const mousePos = getMousePos(canvases.grid.canvas, e); 
+        const x = mousePos.x;
+        const y = mousePos.y;
+        
+        const col = Math.floor(x / gridConfig.cellSize);
+        const row = Math.floor(y / gridConfig.cellSize);
+        const cols = Math.floor(canvases.grid.canvas.width / gridConfig.cellSize); 
+        const cellIndex = row * cols + col;
+        
+        const pKey = state.part3.activeCountingP;
+        
+        const p = (pKey === 'p1') ? state.part1.p1 : state.part1.p2;
+        const cellOrigin = { x: col * gridConfig.cellSize, y: row * gridConfig.cellSize };
+        
+        const coverage = getCellCoverage(cellOrigin, p, state.part3.offsetX, state.part3.offsetY);
+        
+        // If the cell has NO coverage, it's truly outside. Prevent selection and give incorrect feedback.
+        if (coverage.ratio === 0) {
+            playSFX(dom.sfx.incorrect);
+            dom.status.grid.textContent = "This block is outside the parallelogram. Please select a block within the parallelogram.";
+            return;
+        }
+
+        // If already counted, provide feedback and return.
+        if(state.part3.countedCells[pKey].has(cellIndex)) {
+            dom.status.grid.textContent = "You've already selected this block.";
+            playSFX(dom.sfx.click); // Neutral sound as it's already selected
+            return;
+        }
+
+        // Mark the cell as counted (selected)
+        state.part3.countedCells[pKey].add(cellIndex); 
+
+        if (coverage.value > 0) {
+            state.part3.gridCounts[pKey] += coverage.value;
+            dom.displays[pKey === 'p1' ? 'counter1' : 'counter2'].textContent = (state.part3.gridCounts[pKey] * (CM_PER_GRID_UNIT * CM_PER_GRID_UNIT)).toFixed(1);
+            playSFX(dom.sfx.correct); 
+            dom.status.grid.textContent = `Block added! Area for ${pKey.toUpperCase()} is now ${(state.part3.gridCounts[pKey] * CM_PER_GRID_UNIT * CM_PER_GRID_UNIT).toFixed(1)} cm².`;
+        } else { // coverage.value is 0, but coverage.ratio > 0 (partially covered but not enough to count)
+            playSFX(dom.sfx.click); // Neutral sound
+            dom.status.grid.textContent = "This block is partially covered but does not add to the area count.";
+        }
+
+        drawGridScene();
+
+        // **REVISED COMPLETION CHECK**
+        // Check if all relevant (clickable) cells for the current parallelogram have been tapped
+        const allRelevantCellsTapped = (state.part3.countedCells[pKey].size === state.part3.expectedClickableCells[pKey]);
+        
+        if (pKey === 'p1' && allRelevantCellsTapped && !state.part3.s7v3Played) { // Only play S7V3 once
+            state.part3.s7v3Played = true; // Mark as played
+            dom.buttons.countABCD.disabled = true; // Disable ABCD button
+            dom.status.grid.textContent = "All relevant blocks for ABCD counted! Now, let's count for ABEF.";
+            playVoiceoverSequence([dom.vo.s7v3, dom.vo.s8v1, dom.vo.s8v2], 0, () => {
+                state.part3.countABEFEnabled = true; // Enable count for ABEF after s8v2 finishes
+                dom.buttons.countABEF.disabled = false; // Enable the actual button
+                state.part3.activeCountingP = 'p2'; // Automatically switch to ABEF counting mode
+                dom.status.grid.textContent = `Now do the same for parallelogram ABEF. Tap the blocks it covers.`;
+                dom.vo.vo3.textContent = `Now do the same for parallelogram ABEF. Tap the blocks it covers. Green and yellow blocks count as ${CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} cm². Orange blocks count as ${0.5 * CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} cm². Grey ones are ignored. The estimated area for ABEF will appear live.`;
+                drawGridScene();
+            });
+        } else if (pKey === 'p2' && allRelevantCellsTapped && !state.part3.s8v3Played) { // Only play S8V3 once
+            state.part3.s8v3Played = true; // Mark as played
+            dom.buttons.countABEF.disabled = true; // Disable ABEF button
+            dom.status.grid.textContent = "All relevant blocks for ABEF counted! Click 'Go to Conclusion' to see the summary.";
+            playVoiceover(dom.vo.s8v3); // Play S8V3 for ABEF completion
+            dom.buttons.goToPart4.classList.remove('hidden'); 
+            dom.displays.finalComparison.classList.remove('hidden');
+            dom.displays.finalComparison.innerHTML = `The estimated area for ABCD is ${(state.part3.gridCounts.p1 * (CM_PER_GRID_UNIT * CM_PER_GRID_UNIT)).toFixed(1)} cm². <br> The estimated area for ABEF is ${(state.part3.gridCounts.p2 * (CM_PER_GRID_UNIT * CM_GRID_UNIT)).toFixed(1)} cm². <br> Both parallelograms cover approximately the same area. This confirms, even through visual estimation, that their areas are equal! 🎉`;
+        }
+    });
+    
+    dom.buttons.countABCD.addEventListener('click', () => {
+        playSFX(dom.sfx.click); 
+        // Add restriction: count for ABCD button should work only after s7v2 is finished
+        if (!state.part3.countABCDEnabled) {
+            console.log("Count for ABCD button prevented: S7V2 not finished.");
+            return;
+        }
+        state.part3.activeCountingP = 'p1';
+        dom.status.grid.textContent = `Tap on the blocks fully or mostly covered by ABCD. Green and yellow blocks count as ${CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} cm². Orange blocks count as ${0.5 * CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} cm². Grey ones are ignored.`;
+        dom.vo.vo3.textContent = `Tap on the blocks fully or mostly covered by ABCD. Green and yellow blocks count as ${CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} cm². Orange blocks count as ${0.5 * CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} cm². Grey ones are ignored. The estimated area for ABCD will appear live.`;
+        drawGridScene(); 
+    });
+
+    dom.buttons.countABEF.addEventListener('click', () => {
+        playSFX(dom.sfx.click); 
+        if (!dom.buttons.countABCD.disabled) { // Ensure ABCD is completed before starting ABEF
+             dom.status.grid.textContent = "Please finish counting for ABCD first!";
+             playSFX(dom.sfx.incorrect);
+             return;
+        }
+        // Add restriction: ABEF count button should work after s8v2
+        if (!state.part3.countABEFEnabled) {
+            console.log("Count for ABEF button prevented: S8V2 not finished.");
+            return;
+        }
+
+        state.part3.activeCountingP = 'p2';
+        dom.status.grid.textContent = `Now do the same for parallelogram ABEF. Tap the blocks it covers. Green and yellow blocks count as ${CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} cm². Orange blocks count as ${0.5 * CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} cm². Grey ones are ignored.`;
+        dom.vo.vo3.textContent = `Now do the same for parallelogram ABEF. Tap the blocks it covers. Green and yellow blocks count as ${0.5 * CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} cm². Orange blocks count as ${0.5 * CM_PER_GRID_UNIT * CM_PER_GRID_UNIT} cm². Grey ones are ignored. The estimated area for ABEF will appear live.`;
+        drawGridScene(); 
+    });
+    
+    dom.buttons.resetGrid.addEventListener('click', () => {
+        playSFX(dom.sfx.click);
+        initGrid();
+    });
+
+    // --- PART 4: CONCLUSION ---
+    function initPart4() {
+        console.log("Initializing Part 4: Conclusion");
+        dom.vo.vo4.textContent = "Congratulations! You've successfully completed the simulation. Here's a summary of what we've learned about the Parallelogram Area Theorem."; 
+        dom.displays.finalExactAreas.innerHTML = `From Part 2: Exact Area of ABCD = ${state.exactAreaP1.toFixed(0)} cm². <br> Exact Area of ABEF = ${state.exactAreaP2.toFixed(0)} cm².`; 
+        drawComparisonScene();
+        // Play S9V1 and S9V2
+        playVoiceoverSequence([dom.vo.s9v1, dom.vo.s9v2]);
+    }
+
+    function drawComparisonScene() {
+        const { ctx, canvas } = canvases.comparison;
+        if (!ctx) { console.error("Comparison canvas context not found."); return; }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawGridLines(ctx, canvas.width, canvas.height);
+
+        const p1 = state.part1.p1;
+        const p2 = state.part1.p2;
+
+        if (!p1 || !p2) {
+            ctx.fillStyle = '#f00';
+            ctx.font = '24px Arial';
+            ctx.fillText('Parallelograms not constructed. Please complete Part 1.', 50, 100);
+            return;
+        }
+
+        const baseLineY = canvas.height - 70; 
+        const canvasCenterY = canvas.height / 2;
+        const scaleFactorForComparison = 0.6; 
+
+        const p1ScaledBase = p1.base / CM_PER_GRID_UNIT * gridConfig.cellSize * scaleFactorForComparison;
+        const p1ScaledHeight = p1.height / CM_PER_GRID_UNIT * gridConfig.cellSize * scaleFactorForComparison;
+        const p1SlantX = (p1.D.x - p1.A.x) / gridConfig.cellSize * scaleFactorForComparison * gridConfig.cellSize; 
+
+        const p1TargetCenterX = canvas.width / 4;
+        const p1TargetTopY = canvasCenterY - (p1ScaledHeight / 2);
+
+        const p1DisplayA = {
+            x: p1TargetCenterX - (p1ScaledBase / 2),
+            y: p1TargetTopY + p1ScaledHeight 
+        };
+        const p1DisplayB = {
+            x: p1DisplayA.x + p1ScaledBase,
+            y: p1DisplayA.y
+        };
+        const p1DisplayD = {
+            x: p1DisplayA.x + p1SlantX,
+            y: p1TargetTopY
+        };
+
+        const p1_display_obj = new Parallelogram(p1DisplayA, p1DisplayB, p1DisplayD, false);
+        p1_display_obj.draw(ctx);
+        p1_display_obj.drawLabels(ctx); 
+
+        ctx.fillStyle = '#2196F340'; 
+        const rect1X = p1DisplayA.x;
+        const rect1Y = p1DisplayD.y;
+        ctx.fillRect(rect1X, rect1Y, p1ScaledBase, p1ScaledHeight);
+        ctx.strokeStyle = '#2196F3';
+        ctx.strokeRect(rect1X, rect1Y, p1ScaledBase, p1ScaledHeight);
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 18px Arial'; 
+        ctx.textAlign = 'center'; 
+        ctx.fillText("Equivalent Rectangle", rect1X + p1ScaledBase / 2, p1DisplayA.y + 30); 
+        ctx.textAlign = 'start'; 
+
+        const p2ScaledBase = p2.base / CM_PER_GRID_UNIT * gridConfig.cellSize * scaleFactorForComparison;
+        const p2ScaledHeight = p2.height / CM_PER_GRID_UNIT * gridConfig.cellSize * scaleFactorForComparison;
+        const p2SlantX = (p2.D.x - p2.A.x) / gridConfig.cellSize * scaleFactorForComparison * gridConfig.cellSize; 
+
+        const p2TargetCenterX = canvas.width * 3 / 4;
+        const p2TargetTopY = canvasCenterY - (p2ScaledHeight / 2);
+
+        const p2DisplayA = {
+            x: p2TargetCenterX - (p2ScaledBase / 2),
+            y: p2TargetTopY + p2ScaledHeight
+        };
+        const p2DisplayB = {
+            x: p2DisplayA.x + p2ScaledBase,
+            y: p2DisplayA.y
+        };
+        const p2DisplayD = {
+            x: p2DisplayA.x + p2SlantX,
+            y: p2TargetTopY
+        };
+
+        const p2_display_obj = new Parallelogram(p2DisplayA, p2DisplayB, p2DisplayD, true);
+        p2_display_obj.draw(ctx);
+        p2_display_obj.drawLabels(ctx); 
+
+        ctx.fillStyle = '#4CAF5040'; 
+        const rect2X = p2DisplayA.x;
+        const rect2Y = p2DisplayD.y;
+        ctx.fillRect(rect2X, rect2Y, p2ScaledBase, p2ScaledHeight);
+        ctx.strokeStyle = '#4CAF50';
+        ctx.strokeRect(rect2X, rect2Y, p2ScaledBase, p2ScaledHeight);
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 18px Arial'; 
+        ctx.textAlign = 'center'; 
+        ctx.fillText("Equivalent Rectangle", rect2X + p2ScaledBase / 2, p2DisplayA.y + 30); 
+        ctx.textAlign = 'start'; 
+
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 24px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Parallelogram ABCD', canvas.width / 4, 30);
+        ctx.fillText('Parallelogram ABEF', canvas.width * 3 / 4, 30);
+
+        ctx.strokeStyle = '#aaa';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, 50);
+        ctx.lineTo(canvas.width / 2, canvas.height - 50);
+        ctx.stroke();
+    }
+
+    // --- NAVIGATION ---
+    dom.buttons.goToPart2.addEventListener('click', () => {
+        playSFX(dom.sfx.click); 
+        dom.parts.part1.classList.add('hidden');
+        dom.parts.part2.classList.remove('hidden'); 
+        dom.parts.part3.classList.add('hidden');
+        dom.parts.part4.classList.add('hidden');
+        initRearrangement(); 
+    });
+
+    dom.buttons.goToPart3.addEventListener('click', () => {
+        playSFX(dom.sfx.click); 
+        dom.parts.part2.classList.add('hidden');
+        dom.parts.part3.classList.remove('hidden');
+        dom.parts.part4.classList.add('hidden'); 
+        initGrid();
+    });
+
+    if (dom.buttons.goToPart4) { 
+        dom.buttons.goToPart4.addEventListener('click', () => {
+            playSFX(dom.sfx.click); 
+            dom.parts.part3.classList.add('hidden');
+            dom.parts.part4.classList.remove('hidden');
+            initPart4();
+        });
+    }
+
+    if (dom.buttons.restartSimulation) { 
+        dom.buttons.restartSimulation.addEventListener('click', () => {
+            console.log("Restart Simulation button clicked."); // Log when button is clicked
+            playSFX(dom.sfx.click); 
+            try {
+                window.location.reload(true); // Force reload from server
+                console.log("window.location.reload(true) called.");
+            } catch (e) {
+                console.error("Error reloading page:", e);
+            }
+        });
+    }
+
+    // --- INITIALIZE SIMULATION (START SCREEN LOGIC) ---
+    dom.introScreen.classList.add('hidden');
+    dom.materialsPrecautionsScreen.classList.add('hidden'); 
+    dom.mainSimulationContent.classList.add('hidden');
+    dom.startScreen.classList.remove('hidden'); 
+
+    dom.buttons.startSimulation.addEventListener('click', () => {
+        playSFX(dom.sfx.click); 
+        dom.startScreen.classList.add('hidden');
+        dom.introScreen.classList.remove('hidden'); 
+        dom.materialsPrecautionsScreen.classList.add('hidden'); 
+        dom.mainSimulationContent.classList.add('hidden'); 
+    });
+
+    dom.buttons.continueIntro.addEventListener('click', () => {
+        playSFX(dom.sfx.click); 
+        stopAudio(dom.vo.s1v1); 
+        stopAudio(dom.vo.s1v2);
+        stopAudio(dom.vo.s2v1);
+        stopAudio(dom.vo.s2v2);
+        dom.introScreen.classList.add('hidden');
+        dom.materialsPrecautionsScreen.classList.remove('hidden'); 
+        dom.mainSimulationContent.classList.add('hidden'); 
+    });
+
+    dom.buttons.proceedToSimulation.addEventListener('click', () => {
+        playSFX(dom.sfx.click); 
+        dom.materialsPrecautionsScreen.classList.add('hidden');
+        dom.mainSimulationContent.classList.remove('hidden'); 
+        initConstruction(); // This now correctly triggers the first set of VOs.
+    });
+
+    // NEW EVENT LISTENERS FOR PART 2 BUTTONS
+    dom.buttons.nextRearrangementStepContinue.addEventListener('click', () => {
+        playSFX(dom.sfx.click);
+        if (!state.part2.measurementSubmitted) return; 
+
+        // Advance step to the "Drop Perpendicular" display phase
+        const isABCD = state.part2.activeP === state.part1.p1;
+        if (isABCD) { state.part2.step = 1; } else { state.part2.step = 4; } 
+
+        updateRearrangementStatusVO(); 
+        drawRearrangementScene(); 
+    });
+
+    dom.buttons.nextRearrangementStepDropPerpendicular.addEventListener('click', () => {
+        playSFX(dom.sfx.click); 
+
+        const isABCD = state.part2.activeP === state.part1.p1;
+
+        if (dom.buttons.nextRearrangementStepDropPerpendicular.textContent === "Drop Perpendicular") {
+            // This is the "Drop Perpendicular" action
+            // Now move to the dragging phase
+            if (isABCD) { 
+                state.part2.step = 2; 
+                playVoiceoverSequence([dom.vo.s4v2, dom.vo.s4v3], 0, () => {
+                    state.part2.triangleDragEnabled = true; // Enable dragging after s4v3 finishes
+                    canvases.rearrangement.canvas.style.cursor = 'grab';
+                });
+            } else { 
+                state.part2.step = 5; 
+                playVoiceoverSequence([dom.vo.s5v1, dom.vo.s5v2], 0, () => {
+                    state.part2.triangleDragEnabled = true; // Enable dragging after s5v2 finishes
+                    canvases.rearrangement.canvas.style.cursor = 'grab';
+                });
+            }
+            updateRearrangementStatusVO(); 
+            drawRearrangementScene();
+        } else if (dom.buttons.nextRearrangementStepDropPerpendicular.textContent === "Next Parallelogram") {
+            // Next Parallelogram button should work only if s4v4 is finished.
+            if (!state.part2.nextParaBtnEnabled) {
+                console.log("Next Parallelogram button prevented: S4V4 not finished.");
+                return;
+            }
+            state.part2.p1Rearranged = true; 
+            state.part2.activeP = state.part1.p2;
+            state.part2.triangleSnapped = false; 
+            initRearrangement(state.part1.p2); 
+        }
+    });
+
+    dom.submitMeasurementBtn.addEventListener('click', () => {
+        // In Part 2 submit values button should only work after s4v1 is finished.
+        // Again submit values button for ABEF should work only after s4v1 is finished.
+        if (!state.part2.submitBtnEnabled) {
+            console.log("Submit button prevented: S4V1 not finished.");
+            return;
+        }
+
+        playSFX(dom.sfx.click); 
+        const enteredBase = parseFloat(dom.inputBase.value);
+        const enteredHeight = parseFloat(dom.inputHeight.value);
+
+        const expectedBase = 5; 
+        const expectedHeight = 4;
+
+        if (enteredBase === expectedBase && enteredHeight === expectedHeight) {
+            state.part2.measurementSubmitted = true;
+            dom.measurementFeedback.textContent = "Correct! Click 'Continue' to proceed.";
+            dom.measurementFeedback.className = 'mt-3 text-center font-medium text-green-700 min-h-[20px]';
+            dom.inputBase.disabled = true; 
+            dom.inputHeight.disabled = true;
+            dom.submitMeasurementBtn.disabled = true;
+            playSFX(dom.sfx.correct); 
+            updateRearrangementStatusVO(); 
+        } else {
+            state.part2.measurementSubmitted = false; 
+            dom.measurementFeedback.textContent = "Incorrect values. Please review the dimensions and try again.";
+            dom.measurementFeedback.className = 'mt-3 text-center font-medium text-red-700 min-h-[20px]';
+            playSFX(dom.sfx.incorrect); 
+            updateRearrangementStatusVO(); 
+        }
+    });
+
+});
+</script>
+</body>
+</html>
